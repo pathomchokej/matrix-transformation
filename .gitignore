@@ -2,5 +2,5 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Matrix Transformation/bin/Debug/net8.0-windows
+/Matrix Transformation/bin
 /Matrix Transformation/obj

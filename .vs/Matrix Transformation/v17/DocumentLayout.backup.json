@@ -1,0 +1,40 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Projects\\plankton\\matrix-transformation\\init\\matrix-transformation\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CDEC768E-7505-44BB-9369-BC10C8708399}|Matrix Transformation\\Matrix Transformation.csproj|d:\\projects\\plankton\\matrix-transformation\\init\\matrix-transformation\\matrix transformation\\formmain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{CDEC768E-7505-44BB-9369-BC10C8708399}|Matrix Transformation\\Matrix Transformation.csproj|solutionrelative:matrix transformation\\formmain.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FormMain.cs [Design]",
+              "DocumentMoniker": "D:\\Projects\\plankton\\matrix-transformation\\init\\matrix-transformation\\Matrix Transformation\\FormMain.cs",
+              "RelativeDocumentMoniker": "Matrix Transformation\\FormMain.cs",
+              "ToolTip": "D:\\Projects\\plankton\\matrix-transformation\\init\\matrix-transformation\\Matrix Transformation\\FormMain.cs [Design]",
+              "RelativeToolTip": "Matrix Transformation\\FormMain.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-07T14:06:45.891Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
