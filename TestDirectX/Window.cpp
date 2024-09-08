@@ -1,51 +1,84 @@
+#include <Windows.h>
+
+#include "DirectXScene.h"
 #include "Window.h"
 
+DirectXScene* g_directX = NULL;
 
-Window::Window(int width, int height, const char* name) :
-   width(width), height(height), hInstance(GetModuleHandle(nullptr))
+Window::Window(HINSTANCE hInstance, int width, int height, const char* name) :
+   width(width), height(height), hInstance(hInstance)
 {
-   WNDCLASS wc = {};
+   WNDCLASSEX wc;
+   ZeroMemory(&wc, sizeof(WNDCLASSEX));
+
+   wc.cbSize = sizeof(WNDCLASSEX);
+   wc.style = CS_HREDRAW | CS_VREDRAW;
    wc.lpfnWndProc = WindowProc;
    wc.hInstance = hInstance;
+   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
    wc.lpszClassName = windowName;
 
-   RegisterClass(&wc);
+   RegisterClassEx(&wc);
 
+   DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
    RECT winRect;
    winRect.left = 100;
    winRect.right = width + winRect.left;
    winRect.top = 100;
    winRect.bottom = height + winRect.top;
-   AdjustWindowRect(&winRect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+   AdjustWindowRect(&winRect, style, FALSE);
 
-   hWnd = CreateWindow(
+   this->hWnd = CreateWindowEx(NULL, 
       windowName, name,
-      WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-      winRect.left, winRect.top, width, height,
+      style,
+      GetSystemMetrics(SM_CXSCREEN)/2 - width/2, 
+      GetSystemMetrics(SM_CYSCREEN)/2 - height/2,
+      width, height,
       nullptr, nullptr, hInstance, this
    );
 
    ShowWindow(hWnd, SW_SHOWDEFAULT);
+
+   // initialize directX 3D
+   this->dx = new DirectXScene();
+   this->dx->InitializeD3D(this->hWnd);
+   g_directX = dx;
 }
 
 Window::~Window()
 {
+   if (this->dx != NULL) {
+      delete this->dx;
+   }
+
    UnregisterClass(windowName, hInstance);
    DestroyWindow(hWnd);
 }
 
-std::optional<int> Window::ProcessMessages()
+int Window::ProcessMessages()
 {
    MSG msg = {};
-   while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-   {
-      if (msg.message == WM_QUIT) return msg.wParam;
 
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
+   bool exitProgram = false;
+   while (!exitProgram)
+   {
+      if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+      {
+         TranslateMessage(&msg);
+         DispatchMessage(&msg);
+      }
+      else
+      {
+         // TODO: wait for render
+         if (g_directX != NULL) {
+            g_directX->RenderFrame();
+         }
+      }
+
+      exitProgram = (msg.message == WM_QUIT);
    }
 
-   return {};
+   return msg.wParam;
 }
 
 LRESULT __stdcall Window::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

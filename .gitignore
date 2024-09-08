@@ -6,4 +6,5 @@
 /Matrix Transformation/obj
 .vs
 /x64/Debug
-/TestDirectX/x64/Debug/DirectXScene.obj
+/TestDirectX/x64
+/TestDirectX/x64/Debug/TestDirectX.ilk

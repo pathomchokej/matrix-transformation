@@ -1,14 +1,18 @@
 #include <Windows.h>
+
+#include "DirectXScene.h"
 #include "Window.h"
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-   Window window(1280, 720, "Test DirectX");
+   Window window(hInstance, 1280, 720, "Test DirectX");
 
-   bool exitProgram = false;
-   while (!exitProgram)
-   {
-      if (const auto msgCode = Window::ProcessMessages()) 
-         return *msgCode;
-   }
+   //bool exitProgram = false;
+   //while (!exitProgram)
+   //{
+   //   if (const auto msgCode = Window::ProcessMessages()) 
+   //      return *msgCode;
+   //}
+
+   return Window::ProcessMessages();
 }
