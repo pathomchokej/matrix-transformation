@@ -1,6 +1,9 @@
 #include "DirectXScene.h"
 #include "DirectXUtil.h"
 
+const DWORD CUSTOMVERTEX::FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+
+
 DirectXScene::DirectXScene() 
 {
 
@@ -76,6 +79,17 @@ HRESULT DirectXScene::InitializeD3D(HWND hWnd)
       return E_FAIL;
    }
 
+   D3DVIEWPORT9 viewPort;
+   ZeroMemory(&viewPort, sizeof(D3DVIEWPORT9));
+   viewPort.X = 0;
+   viewPort.Y = 0;
+   viewPort.Width = _width;
+   viewPort.Height = _height;
+   viewPort.MinZ = 0;
+   viewPort.MaxZ = 1;
+
+   d3dDevice->SetViewport(&viewPort);
+
    return NOERROR;
 }
 
@@ -83,15 +97,15 @@ void DirectXScene::InitializeGraphic()
 {
    // create the vertices using the CUSTOMVERTEX struct
    CUSTOMVERTEX vertices[] = {
-      { 400.0f, 62.5f, 0.5f, 1.0f, D3DCOLOR_XRGB(0, 0, 255), },
-      { 650.0f, 500.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(0, 255, 0), },
-      { 150.0f, 500.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(255, 0, 0), },
+      { 0.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(0, 0, 255), },
+      { 1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(0, 255, 0), },
+      { -1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 0, 0), },
    };
    // create a vertex buffer interface called v_buffer
    this->d3dDevice->CreateVertexBuffer(
       3 * sizeof(CUSTOMVERTEX),
       0,
-      D3DFVF_XYZRHW| D3DFVF_DIFFUSE,
+      CUSTOMVERTEX::FVF,
       D3DPOOL_MANAGED,
       &this->vertectBuffer,
       NULL
@@ -103,9 +117,36 @@ void DirectXScene::InitializeGraphic()
    this->vertectBuffer->Unlock();
 }
 
+void DirectXScene::InitializeCamera() {
+   D3DXMATRIX view;
+   D3DXMATRIX proj;
+
+   D3DXVECTOR3 position = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
+   D3DXVECTOR3 target = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+   D3DXVECTOR3 up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+   D3DXMatrixLookAtLH(&view, &position, &target, &up);
+   this->d3dDevice->SetTransform(D3DTS_VIEW, &view);
+
+   D3DXMatrixPerspectiveFovLH(&proj, D3DX_PI / 4, static_cast<float>(_width) / _height, 1.0f, 1000.0f);
+   this->d3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
+
+   this->d3dDevice->SetRenderState(D3DRS_LIGHTING, false);
+   this->d3dDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
+}
+
+
 void DirectXScene::RenderFrame()
 {
    d3dDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, DXColors::CornflowerBlue, 1.0f, 0);
+
+   d3dDevice->BeginScene();
+
+   d3dDevice->SetStreamSource(0, vertectBuffer, 0, sizeof(CUSTOMVERTEX));
+   d3dDevice->SetFVF(CUSTOMVERTEX::FVF);
+   d3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+
+   d3dDevice->EndScene();
 
    d3dDevice->Present(0, 0, 0, 0);
 }

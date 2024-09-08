@@ -42,6 +42,8 @@ Window::Window(HINSTANCE hInstance, int width, int height, const char* name) :
    // initialize directX 3D
    this->dx = new DirectXScene();
    this->dx->InitializeD3D(this->hWnd);
+   this->dx->InitializeGraphic();
+   this->dx->InitializeCamera();
    g_directX = dx;
 }
 
@@ -78,7 +80,7 @@ int Window::ProcessMessages()
       exitProgram = (msg.message == WM_QUIT);
    }
 
-   return msg.wParam;
+   return (int)msg.wParam;
 }
 
 LRESULT __stdcall Window::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
