@@ -34,6 +34,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBox1.Location = new Point(32, 33);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(1304, 342);
@@ -43,6 +44,7 @@
             // 
             // panelView
             // 
+            panelView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panelView.BackColor = SystemColors.ControlLight;
             panelView.Location = new Point(32, 409);
             panelView.Name = "panelView";
