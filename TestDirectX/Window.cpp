@@ -61,6 +61,15 @@ int Window::ProcessMessages()
 {
    MSG msg = {};
 
+   __int64 countsPerSec = 0;
+   QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
+   //if (countsPerSec == 0) countsPerSec = 1;
+   float secPerCount = 1.0f / countsPerSec;
+
+   __int64 previous = 0;
+   QueryPerformanceCounter((LARGE_INTEGER*)&previous);
+
+
    bool exitProgram = false;
    while (!exitProgram)
    {
@@ -71,14 +80,25 @@ int Window::ProcessMessages()
       }
       else
       {
-         // TODO: wait for render
          if (g_directX != NULL) {
+            __int64 current = 0;
+            QueryPerformanceCounter((LARGE_INTEGER*)&current);
+            // interval
+            float interval = (current - previous) * secPerCount;
+
+            g_directX->Process(interval);
             g_directX->RenderFrame();
+            g_directX->CalculateFPS(interval);
+
+            previous = current;
+
          }
       }
 
       exitProgram = (msg.message == WM_QUIT);
    }
+
+   if (g_directX != NULL) g_directX->CleanD3D();
 
    return (int)msg.wParam;
 }
