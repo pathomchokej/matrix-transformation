@@ -11,7 +11,11 @@ protected:
    virtual bool Initialize();
    virtual int Process(float elapsedTime);
    virtual void Destroy();
-   
+
+   int GetWidth() const { return _width; }
+   int GetHeight() const{ return _height; }
+   HWND GetHandleWindow() const { return _hWnd; }
+
 private:
    int _width;
    int _height;

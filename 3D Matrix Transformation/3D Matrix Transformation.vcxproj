@@ -137,10 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectXWindow.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXUtil.h" />
+    <ClInclude Include="DirectXWindow.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowUtil.h" />
   </ItemGroup>
