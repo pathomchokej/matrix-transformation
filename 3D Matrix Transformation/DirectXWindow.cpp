@@ -33,6 +33,38 @@ std::string DirectXWindow::PrintMatrix(D3DXMATRIX* matrix) {
    return result;
 }
 
+std::string DirectXWindow::PrintTranslation() {
+   std::string result;
+
+   result = "Translation   X[" + std::format("{:.2f}", xTranslation) + "] ";
+   result += "  Y[" + std::format("{:.2f}", yTranslation) + "] ";
+   result += "  Z[" + std::format("{:.2f}", zTranslation) + "] \n";
+
+   return result;
+}
+
+std::string DirectXWindow::PrintRotation()
+{
+   std::string result;
+
+   result = "Rotation      X[" + std::format("{:.2f}", xRotation) + "] ";
+   result += "  Y[" + std::format("{:.2f}", yRotation) + "] ";
+   result += "  Z[" + std::format("{:.2f}", zRotation) + "] \n";
+
+   return result;
+}
+
+std::string DirectXWindow::PrintScale()
+{
+   std::string result;
+
+   result = "Scale          X[" + std::format("{:.2f}", xScale) + "] ";
+   result += "  Y[" + std::format("{:.2f}", yScale) + "] ";
+   result += "  Z[" + std::format("{:.2f}", zScale) + "] \n";
+
+   return result;
+}
+
 HRESULT DirectXWindow::InitializeDX()
 {
    this->d3d = Direct3DCreate9(D3D_SDK_VERSION);
@@ -130,6 +162,10 @@ HRESULT DirectXWindow::InitializeDXFont()
 
 HRESULT DirectXWindow::InitializeDXCube()
 {
+   xScale = 1.0;
+   yScale = 1.0;
+   zScale = 1.0;
+
    // create the vertices using the CUSTOMVERTEX struct
    CUSTOMVERTEX vertices[] = {
       // triangle
@@ -249,11 +285,125 @@ HRESULT DirectXWindow::InitializeDXCamera() {
    return S_OK;
 }
 
+HRESULT DirectXWindow::InitializeDXKeyboard()
+{
+   // Step 1: Create the DirectInput object
+   if (FAILED(DirectInput8Create(GetInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dInput, NULL))) {
+      return E_FAIL;
+   }
+
+   // Step 2: Create a device for the keyboard
+   if (FAILED(dInput->CreateDevice(GUID_SysKeyboard, &dKeyboard, NULL))) {
+      return E_FAIL;
+   }
+
+   // Step 3: Set the data format (we want the keyboard data format)
+   if (FAILED(dKeyboard->SetDataFormat(&c_dfDIKeyboard))) {
+      return E_FAIL;
+   }
+
+   // Step 4: Set the cooperative level (we'll set it to exclusive and foreground mode)
+   if (FAILED(dKeyboard->SetCooperativeLevel(GetHandleWindow(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))) {
+      return E_FAIL;
+   }
+
+   // Step 5: Acquire the keyboard
+   dKeyboard->Acquire();
+
+   return S_OK;
+}
+
+
+void DirectXWindow::DXKeyboardProcess()
+{
+   float translateSize = 0.001;
+   if (IsKeyPressed(DIK_Q)) {
+      xTranslation += translateSize;
+   }
+   if (IsKeyPressed(DIK_A)) {
+      yTranslation += translateSize;
+   }
+   if (IsKeyPressed(DIK_Z)) {
+      zTranslation += translateSize;
+   }
+   if (IsKeyPressed(DIK_W)) {
+      xTranslation -= translateSize;
+   }
+   if (IsKeyPressed(DIK_S)) {
+      yTranslation -= translateSize;
+   }
+   if (IsKeyPressed(DIK_X)) {
+      zTranslation -= translateSize;
+   }
+
+   float rotationSize = 0.001;
+   if (IsKeyPressed(DIK_E)) {
+      xRotation += rotationSize;
+   }
+   if (IsKeyPressed(DIK_D)) {
+      yRotation += rotationSize;
+   }
+   if (IsKeyPressed(DIK_C)) {
+      zRotation += rotationSize;
+   }
+   if (IsKeyPressed(DIK_R)) {
+      xRotation -= rotationSize;
+   }
+   if (IsKeyPressed(DIK_F)) {
+      yRotation -= rotationSize;
+   }
+   if (IsKeyPressed(DIK_V)) {
+      zRotation -= rotationSize;
+   }
+
+
+   float scaleSize = 0.001;
+   if (IsKeyPressed(DIK_T)) {
+      xScale += scaleSize;
+   }
+   if (IsKeyPressed(DIK_G)) {
+      yScale += scaleSize;
+   }
+   if (IsKeyPressed(DIK_B)) {
+      zScale += scaleSize;
+   }
+   if (IsKeyPressed(DIK_Y)) {
+      xScale -= scaleSize;
+   }
+   if (IsKeyPressed(DIK_H)) {
+      yScale -= scaleSize;
+   }
+   if (IsKeyPressed(DIK_N)) {
+      zScale -= scaleSize;
+   }
+
+   if (IsKeyPressed(DIK_1)) {
+      xScale = 1.0;
+      yScale = 1.0;
+      zScale = 1.0;
+      xTranslation = 0.0;
+      yTranslation = 0.0;
+      zTranslation = 0.0;
+      xRotation = 0.0;
+      yRotation = 0.0;
+      zRotation = 0.0;
+   }
+   if (IsKeyPressed(DIK_2)) {
+      autoRotation = true;
+   }
+   if (IsKeyPressed(DIK_3)) {
+      autoRotation = false;
+   }
+}
+
 void DirectXWindow::DXProcess(float interval)
 {
-   this->xRotation += interval;
-   this->yRotation += interval;
-   this->zRotation += interval;
+   if (autoRotation)
+   {
+      this->xRotation += interval;
+      this->yRotation += interval;
+      this->zRotation += interval;
+   }
 
    D3DXMATRIX matrixRX, matrixRY, matrixRZ;
    D3DXMATRIX scale, translation;
@@ -263,10 +413,14 @@ void DirectXWindow::DXProcess(float interval)
    D3DXMatrixRotationZ(&matrixRZ, this->zRotation);
    D3DXMatrixScaling(&scale, this->xScale, this->yScale, this->zScale);
    D3DXMatrixTranslation(&translation, this->xTranslation, this->yTranslation, this->zTranslation);
-   this->world = matrixRX * matrixRY * matrixRZ * scale * translation;
+   this->world = matrixRX * matrixRY * matrixRZ * translation * scale;
 
-   // TODO: here!!   
+
    _message = PrintMatrix(&world);
+   _message += "\n\n";
+   _message += PrintTranslation();
+   _message += PrintRotation();
+   _message += PrintScale();
 
 }
 
@@ -308,6 +462,22 @@ void DirectXWindow::DXRender()
    d3dDevice->Present(0, 0, 0, 0);
 }
 
+void DirectXWindow::DXPollKeyboard() {
+   HRESULT hr = dKeyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+
+   // If the device lost focus or is not acquired, try to re-acquire it
+   if (FAILED(hr)) {
+      if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) {
+         dKeyboard->Acquire();
+      }
+   }
+}
+
+bool DirectXWindow::IsKeyPressed(BYTE key) {
+   // Check if the key is pressed in the state buffer
+   return (keyboardState[key] & 0x80) != 0;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Base Window
 
@@ -323,6 +493,7 @@ bool DirectXWindow::Initialize()
    if (FAILED(InitializeDXFont())) return false;
    if (FAILED(InitializeDXCamera())) return false;
    if (FAILED(InitializeDXCube())) return false;
+   if (FAILED(InitializeDXKeyboard())) return false;
 
    return true;
 }
@@ -330,6 +501,8 @@ bool DirectXWindow::Initialize()
 
 int DirectXWindow::Process(float elapsedTime)
 {
+   DXPollKeyboard();
+   DXKeyboardProcess();
    DXProcess(elapsedTime);
    DXCalculateFPS(elapsedTime);
    DXRender();
@@ -339,6 +512,9 @@ int DirectXWindow::Process(float elapsedTime)
 
 void DirectXWindow::Destroy()
 {
+   DX::ReleaseUnacquire(this->dKeyboard);
+   DX::Release(this->dInput);
+
    DX::Release(this->vertectBuffer);
    DX::Release(this->indexBuffer);
    DX::Release(this->_font);

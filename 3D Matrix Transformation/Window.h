@@ -15,6 +15,7 @@ protected:
    int GetWidth() const { return _width; }
    int GetHeight() const{ return _height; }
    HWND GetHandleWindow() const { return _hWnd; }
+   HINSTANCE GetInstance() const { return _hInstance; }
 
 private:
    int _width;

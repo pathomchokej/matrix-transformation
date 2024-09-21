@@ -12,6 +12,16 @@ namespace DXColors {
 }
 
 namespace DX {
+
+   template <class T> void ReleaseUnacquire(T t) {
+      if (t)
+      {
+         t->Unacquire();
+         t->Release();
+         t = NULL;
+      }
+   }
+
    template <class T> void Release(T t) {
       if (t)
       {

@@ -1,10 +1,13 @@
 #pragma once
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <dinput.h>
 #include <string>
 
 #pragma comment (lib, "d3d9.lib")
 #pragma comment (lib, "d3dx9.lib")
+#pragma comment (lib, "dinput8.lib")
+#pragma comment (lib, "dxguid.lib")
 
 class DirectXWindow : public Window
 {
@@ -18,15 +21,25 @@ protected:
 
 private:
    std::string PrintMatrix(D3DXMATRIX* matrix);
+   std::string PrintTranslation();
+   std::string PrintRotation();
+   std::string PrintScale();
+
    HRESULT InitializeDX();
    HRESULT InitializeDXDevice();
    HRESULT InitializeDXFont();
    HRESULT InitializeDXCamera();
    HRESULT InitializeDXCube();
+   HRESULT InitializeDXKeyboard();
 
    void DXProcess(float interval);
    void DXCalculateFPS(float interval);
    void DXRender();
+   void DXPollKeyboard();
+   void DXKeyboardProcess();
+
+
+   bool IsKeyPressed(BYTE key);
 
 private:
    LPDIRECT3D9 d3d;
@@ -36,6 +49,7 @@ private:
 
    D3DXMATRIX world;
 
+   bool autoRotation;
    float xRotation;
    float yRotation;
    float zRotation;
@@ -55,5 +69,8 @@ private:
    ID3DXFont* _font;
    RECT _fRect;
    std::string _message;
-};
 
+   LPDIRECTINPUT8 dInput = NULL;
+   LPDIRECTINPUTDEVICE8 dKeyboard = NULL;
+   BYTE keyboardState[256];
+};
