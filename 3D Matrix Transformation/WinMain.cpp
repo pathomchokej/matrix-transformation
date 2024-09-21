@@ -1,11 +1,10 @@
 #include <Windows.h>
 
-//#include "DirectXScene.h"
-//#include "Window.h"
+#include "Window.h"
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-   //Window window(hInstance, 1280, 720, "Test DirectX");
+   Window window(hInstance, 1280, 720, "Test DirectX");
 
    //bool exitProgram = false;
    //while (!exitProgram)
@@ -14,7 +13,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
    //      return *msgCode;
    //}
 
-   //return Window::ProcessMessages();
+   return window.Start();
 
-   return 0;
+   //return 0;
 }
