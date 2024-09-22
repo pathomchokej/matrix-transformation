@@ -76,6 +76,27 @@ bool DX3D::IsKeyPressed(BYTE key) {
    return (_keyboardState[key] & 0x80) != 0;
 }
 
+bool DX3D::CreateLine(CUSTOMVERTEX vertices[], UINT sizeOfVertex, LPDIRECT3DVERTEXBUFFER9* vertectBuffer)
+{
+   // create a vertex buffer interface called v_buffer
+   HRESULT result = _d3dDevice->CreateVertexBuffer(
+      sizeOfVertex,
+      0,
+      CUSTOMVERTEX::FVF,
+      D3DPOOL_DEFAULT,
+      vertectBuffer,
+      NULL
+   );
+
+   VOID* pVoid; // a void pointer
+   // lock v_buffer and load the vertices into it
+   result = (*vertectBuffer)->Lock(0, 0, (void**)&pVoid, 0);
+   memcpy(pVoid, vertices, sizeOfVertex);
+   result = (*vertectBuffer)->Unlock();
+
+   return result == S_OK;
+}
+
 bool DX3D::CreatePolygon(
    CUSTOMVERTEX vertices[], UINT sizeOfVertex, 
    WORD indices[], UINT sizeofIndex, 
@@ -101,16 +122,16 @@ bool DX3D::CreatePolygon(
       NULL
    );
 
-   //VOID* pVoid; // a void pointer
-   //// lock v_buffer and load the vertices into it
-   //result = (*vertectBuffer)->Lock(0, 0, (void**)&pVoid, 0);
-   //memcpy(pVoid, vertices, sizeof(vertices));
-   //result = (*vertectBuffer)->Unlock();
+   VOID* pVoid; // a void pointer
+   // lock v_buffer and load the vertices into it
+   result = (*vertectBuffer)->Lock(0, 0, (void**)&pVoid, 0);
+   memcpy(pVoid, vertices, sizeOfVertex);
+   result = (*vertectBuffer)->Unlock();
 
-   //VOID* pIndices;
-   //result = (*indexBuffer)->Lock(0, 0, (void**)&pIndices, 0);
-   //memcpy(pIndices, indices, sizeof(indices));
-   //result = (*indexBuffer)->Unlock();
+   VOID* pIndices;
+   result = (*indexBuffer)->Lock(0, 0, (void**)&pIndices, 0);
+   memcpy(pIndices, indices, sizeofIndex);
+   result = (*indexBuffer)->Unlock();
 
    return true;
 }
@@ -146,6 +167,13 @@ void DX3D::DrawMessage(std::string message, int left, int top, int right, int bo
    if (_font) {
       _font->DrawTextA(NULL, message.c_str(), -1, &rect, DT_LEFT, textColor);
    }
+}
+
+void DX3D::DrawLine(LPDIRECT3DVERTEXBUFFER9 vertectBuffer)
+{
+   _d3dDevice->SetStreamSource(0, vertectBuffer, 0, sizeof(CUSTOMVERTEX));
+   _d3dDevice->SetFVF(CUSTOMVERTEX::FVF);
+   _d3dDevice->DrawPrimitive(D3DPT_LINELIST, 0, 1);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

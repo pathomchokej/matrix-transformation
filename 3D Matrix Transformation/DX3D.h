@@ -29,12 +29,14 @@ public:
 
    bool IsKeyPressed(BYTE key);
 
+   bool CreateLine(CUSTOMVERTEX vertices[], UINT sizeOfVertex, LPDIRECT3DVERTEXBUFFER9* vertectBuffer);
    bool CreatePolygon(CUSTOMVERTEX vertices[], UINT sizeOfVertex, WORD indices[], UINT sizeofIndex, LPDIRECT3DVERTEXBUFFER9* vertectBuffer, LPDIRECT3DINDEXBUFFER9* indexBuffer);
 
    void StartDraw(D3DCOLOR backgroundColor, D3DXMATRIX* world);
    void EndDraw();
    void DrawPolygon(LPDIRECT3DVERTEXBUFFER9 vertectBuffer, LPDIRECT3DINDEXBUFFER9 indexBuffer, UINT numberOfVertices);
    void DrawMessage(std::string message, int left, int top, int right, int bottom, D3DCOLOR textColor);
+   void DrawLine(LPDIRECT3DVERTEXBUFFER9 vertectBuffer);
 
 private:
    HRESULT InitializeDX();
@@ -45,7 +47,7 @@ private:
 
    void KeyboardProcess();
 
-public:
+private:
    HWND _hWnd;
    int _screenWidth;
    int _screenHeight;

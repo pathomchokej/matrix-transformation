@@ -58,6 +58,45 @@ std::string DirectXWindow::PrintScale()
    return result;
 }
 
+HRESULT DirectXWindow::InitializeXYZAxis()
+{
+   CUSTOMVERTEX verticesX[] = {
+      { 3.0f, 0.0f, 0.0f, DXColors::Green, }, // 0
+      { -3.0f, 0.0f, 0.0f, DXColors::Red, }, // 1
+   };
+
+   bool result = _dx3D->CreateLine(verticesX, sizeof(verticesX), &this->vertectBufferXLine);
+
+   //VOID* pVoid; // a void pointer
+   //// lock v_buffer and load the vertices into it
+   //this->vertectBufferXLine->Lock(0, 0, (void**)&pVoid, 0);
+   //memcpy(pVoid, verticesX, sizeof(verticesX));
+   //this->vertectBufferXLine->Unlock();
+
+
+   CUSTOMVERTEX verticesY[] = {
+      { 0.0f, 3.0f, 0.0f, DXColors::Green, }, // 0
+      { 0.0f, -3.0f, 0.0f, DXColors::Red, }, // 1
+   };
+
+   result = _dx3D->CreateLine(verticesY, sizeof(verticesY), &this->vertectBufferYLine);
+
+   //VOID* pVoid; // a void pointer
+   //// lock v_buffer and load the vertices into it
+   //this->vertectBufferXLine->Lock(0, 0, (void**)&pVoid, 0);
+   //memcpy(pVoid, verticesX, sizeof(verticesX));
+   //this->vertectBufferXLine->Unlock();
+
+   CUSTOMVERTEX verticesZ[] = {
+   { 0.0f, 0.0f, 3.0f, DXColors::Green, }, // 0
+   { 0.0f, 0.0f, -3.0f, DXColors::Red, }, // 1
+   };
+
+   result = _dx3D->CreateLine(verticesZ, sizeof(verticesZ), &this->vertectBufferZLine);
+
+   return S_OK;
+}
+
 HRESULT DirectXWindow::InitializeDXCube()
 {
    // create the vertices using the CUSTOMVERTEX struct
@@ -249,7 +288,7 @@ void DirectXWindow::DXKeyboardProcess()
    }
 }
 
-void DirectXWindow::DXProcess(float interval)
+void DirectXWindow::MatrixCalculation(float interval)
 {
    if (autoRotation)
    {
@@ -296,6 +335,12 @@ void DirectXWindow::DXCalculateFPS(float interval)
 void DirectXWindow::DXRender()
 {
    _dx3D->StartDraw(DXColors::Black, &world);
+   if (drawAxis)
+   {
+      _dx3D->DrawLine(vertectBufferXLine);
+      _dx3D->DrawLine(vertectBufferYLine);
+      _dx3D->DrawLine(vertectBufferZLine);
+   }
    _dx3D->DrawPolygon(vertectBuffer, indexBuffer, 36);
    _dx3D->DrawMessage(_message, 0, 0, 400, 200, DXColors::White);
    _dx3D->EndDraw();
@@ -311,6 +356,8 @@ DirectXWindow::DirectXWindow(HINSTANCE hInstance, int width, int height, const c
 
 bool DirectXWindow::Initialize()
 {
+   //drawAxis = true;
+
    xScale = 1.0;
    yScale = 1.0;
    zScale = 1.0;
@@ -319,6 +366,7 @@ bool DirectXWindow::Initialize()
    if (!_dx3D->Initialize()) return false;
 
    if (FAILED(InitializeDXCube())) return false;
+   if (FAILED(InitializeXYZAxis())) return false;
 
    return true;
 }
@@ -329,7 +377,7 @@ int DirectXWindow::Process(float elapsedTime)
    if (_dx3D) _dx3D->Process();
 
    DXKeyboardProcess();
-   DXProcess(elapsedTime);
+   MatrixCalculation(elapsedTime);
    DXCalculateFPS(elapsedTime);
    DXRender();
    return 0;
@@ -340,6 +388,9 @@ void DirectXWindow::Destroy()
 {
    if (_dx3D)
    {
+      DX::Release(this->vertectBufferXLine);
+      DX::Release(this->vertectBufferYLine);
+      DX::Release(this->vertectBufferZLine);
       DX::Release(this->vertectBuffer);
       DX::Release(this->indexBuffer);
       _dx3D->Destroy();

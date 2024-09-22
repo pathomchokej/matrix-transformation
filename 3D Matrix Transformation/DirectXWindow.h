@@ -26,9 +26,10 @@ private:
    std::string PrintScale();
 
    HRESULT InitializeDXCube();
+   HRESULT InitializeXYZAxis();
    bool IsKeyPressed(BYTE key) { return _dx3D->IsKeyPressed(key); }
 
-   void DXProcess(float interval);
+   void MatrixCalculation(float interval);
    void DXCalculateFPS(float interval);
    void DXRender();
    void DXKeyboardProcess();
@@ -38,6 +39,11 @@ private:
 
    LPDIRECT3DVERTEXBUFFER9 vertectBuffer;
    LPDIRECT3DINDEXBUFFER9 indexBuffer;
+
+   bool drawAxis;
+   LPDIRECT3DVERTEXBUFFER9 vertectBufferXLine;
+   LPDIRECT3DVERTEXBUFFER9 vertectBufferYLine;
+   LPDIRECT3DVERTEXBUFFER9 vertectBufferZLine;
 
    D3DXMATRIX world;
 
