@@ -138,12 +138,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DirectXWindow.cpp" />
+    <ClCompile Include="DX3D.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXUtil.h" />
     <ClInclude Include="DirectXWindow.h" />
+    <ClInclude Include="DX3D.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowUtil.h" />
   </ItemGroup>

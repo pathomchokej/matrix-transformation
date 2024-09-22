@@ -4,10 +4,10 @@
 #include <dinput.h>
 #include <string>
 
-#pragma comment (lib, "d3d9.lib")
-#pragma comment (lib, "d3dx9.lib")
-#pragma comment (lib, "dinput8.lib")
-#pragma comment (lib, "dxguid.lib")
+//#pragma comment (lib, "d3d9.lib")
+//#pragma comment (lib, "d3dx9.lib")
+//#pragma comment (lib, "dinput8.lib")
+//#pragma comment (lib, "dxguid.lib")
 
 class DirectXWindow : public Window
 {
@@ -25,25 +25,17 @@ private:
    std::string PrintRotation();
    std::string PrintScale();
 
-   HRESULT InitializeDX();
-   HRESULT InitializeDXDevice();
-   HRESULT InitializeDXFont();
-   HRESULT InitializeDXCamera();
    HRESULT InitializeDXCube();
-   HRESULT InitializeDXKeyboard();
+   bool IsKeyPressed(BYTE key) { return _dx3D->IsKeyPressed(key); }
 
    void DXProcess(float interval);
    void DXCalculateFPS(float interval);
    void DXRender();
-   void DXPollKeyboard();
    void DXKeyboardProcess();
 
-
-   bool IsKeyPressed(BYTE key);
-
 private:
-   LPDIRECT3D9 d3d;
-   LPDIRECT3DDEVICE9 d3dDevice;
+   DX3D* _dx3D;
+
    LPDIRECT3DVERTEXBUFFER9 vertectBuffer;
    LPDIRECT3DINDEXBUFFER9 indexBuffer;
 
@@ -66,11 +58,5 @@ private:
    float _elapsedTime;
    int _count;
 
-   ID3DXFont* _font;
-   RECT _fRect;
    std::string _message;
-
-   LPDIRECTINPUT8 dInput = NULL;
-   LPDIRECTINPUTDEVICE8 dKeyboard = NULL;
-   BYTE keyboardState[256];
 };

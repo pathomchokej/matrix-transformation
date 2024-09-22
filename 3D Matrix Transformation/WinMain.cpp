@@ -1,5 +1,6 @@
 #include <Windows.h>
 
+#include "DX3D.h"
 #include "Window.h"
 #include "DirectXWindow.h"
 
